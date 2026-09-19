@@ -3,17 +3,17 @@ import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
-import { initDatabase, getDbStatus } from './server/db.js';
-import authRoutes from './server/routes/auth.js';
-import listingsRoutes from './server/routes/listings.js';
-import applicationsRoutes from './server/routes/applications.js';
-import bookmarksRoutes from './server/routes/bookmarks.js';
+import { initDatabase, getDbStatus } from './db.js';
+import authRoutes from './routes/auth.js';
+import listingsRoutes from './routes/listings.js';
+import applicationsRoutes from './routes/applications.js';
+import bookmarksRoutes from './routes/bookmarks.js';
 
 dotenv.config();
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   // Standard Middlewares with Secure CORS for deployment
   app.use(cors({
@@ -23,7 +23,7 @@ async function startServer() {
   }));
   app.use(express.json());
 
-  // Initialize Database (MongoDB Atlas with fallback)
+  // Initialize Database (MongoDB Atlas)
   await initDatabase();
 
   // API Routes
