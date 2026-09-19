@@ -1,0 +1,7 @@
+{
+  "name": "NexHire Job & Career Board",
+  "description": "MERN-powered dual-access job board with dedicated Student portal for internships, hackathons, and job roles, and Company portal with candidate filtering and ATS dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
