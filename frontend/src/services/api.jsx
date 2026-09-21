@@ -194,5 +194,64 @@ export const api = {
         headers: getHeaders()
       });
     }
+  },
+  // Resume Scraping & Recommendations
+  resume: {
+    async parse(payload) {
+      const res = await fetch(`${API_BASE}/resume/parse`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to parse resume");
+      return json;
+    },
+    async getRecommendations() {
+      const res = await fetch(`${API_BASE}/resume/recommendations`, {
+        headers: getHeaders()
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to fetch recommendations");
+      return json;
+    }
+  },
+  // Student Achievements
+  studentPosts: {
+    async getAll(filters) {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([k, v]) => {
+          if (v && v !== "all" && v !== "All") {
+            params.append(k, String(v));
+          }
+        });
+      }
+      const res = await fetch(`${API_BASE}/student-posts?${params.toString()}`, {
+        headers: getHeaders()
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to load achievements");
+      return json.posts || [];
+    },
+    async create(postData) {
+      const res = await fetch(`${API_BASE}/student-posts`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(postData)
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to create achievement post");
+      return json.post;
+    },
+    async delete(id) {
+      const res = await fetch(`${API_BASE}/student-posts/${id}`, {
+        method: "DELETE",
+        headers: getHeaders()
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to delete post");
+      return json;
+    }
   }
 };

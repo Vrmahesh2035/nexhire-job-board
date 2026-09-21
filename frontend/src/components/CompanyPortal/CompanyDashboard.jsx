@@ -5,11 +5,13 @@ import {
   Users,
   PlusCircle,
   Briefcase,
-  Sparkles
+  Sparkles,
+  Trophy
 } from "lucide-react";
 import { ATSBoard } from "./ATSBoard";
 import { PostJobForm } from "./PostJobForm";
 import { ManageListingsView } from "./ManageListingsView";
+import { RecruiterAchievementsView } from "./RecruiterAchievementsView";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 export const CompanyDashboard = ({ onOpenAuth }) => {
@@ -189,6 +191,18 @@ export const CompanyDashboard = ({ onOpenAuth }) => {
       /* @__PURE__ */ jsxs(
         "button",
         {
+          onClick: () => setActiveTab("talent_feed"),
+          className: `flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${activeTab === "talent_feed" ? "bg-amber-600 text-white shadow-xs" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800"}`,
+          children: [
+            /* @__PURE__ */ jsx(Trophy, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ jsx("span", { children: "Student Talent & Achievements" }),
+            /* @__PURE__ */ jsx("span", { className: "px-1.5 py-0.2 bg-amber-500/30 text-white rounded-full text-[10px] font-bold", children: "Spotlight" })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxs(
+        "button",
+        {
           onClick: () => setActiveTab("post_new"),
           className: `flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${activeTab === "post_new" ? "bg-indigo-600 text-white shadow-xs" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800"}`,
           children: [
@@ -207,6 +221,10 @@ export const CompanyDashboard = ({ onOpenAuth }) => {
         onUpdateStatus: handleUpdateStatus,
         onRefresh: fetchData
       }
+    ),
+    activeTab === "talent_feed" && /* @__PURE__ */ jsx(
+      RecruiterAchievementsView,
+      {}
     ),
     activeTab === "postings" && /* @__PURE__ */ jsx(
       ManageListingsView,

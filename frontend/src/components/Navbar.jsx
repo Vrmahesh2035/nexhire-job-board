@@ -1,5 +1,5 @@
 import { jsx, jsxs } from "react/jsx-runtime";
-import { Briefcase, GraduationCap, Building2, LogOut, Sun, Moon } from "lucide-react";
+import { Briefcase, GraduationCap, Building2, LogOut, Sun, Moon, FileText } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 export const Navbar = ({ onOpenAuth }) => {

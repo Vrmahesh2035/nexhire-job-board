@@ -4,7 +4,9 @@ const memoryStore = {
   users: [],
   listings: [],
   applications: [],
-  bookmarks: []
+  bookmarks: [],
+  studentPosts: [],
+  resumes: []
 };
 let mongoClient = null;
 let mongoDb = null;
@@ -25,17 +27,20 @@ export async function initDatabase() {
       isAtlasConnected = true;
       console.log("Successfully connected to MongoDB Atlas (database: nexhire_jobboard)");
       await seedDatabaseIfEmpty();
+      await seedStudentPostsIfEmpty();
       return { connected: true, type: "mongodb_atlas" };
     } catch (err) {
       console.warn("MongoDB Atlas connection failed, falling back to embedded in-memory store:", err.message);
       connectionError = err.message;
       isAtlasConnected = false;
       await seedDatabaseIfEmpty();
+      await seedStudentPostsIfEmpty();
       return { connected: false, type: "embedded_store", error: err.message };
     }
   } else {
     console.log("MONGODB_URI not provided or contains placeholders. Using embedded memory store.");
     await seedDatabaseIfEmpty();
+    await seedStudentPostsIfEmpty();
     return { connected: false, type: "embedded_store" };
   }
 }
@@ -198,7 +203,7 @@ export const db = {
     async add(studentId, listingId) {
       const exists = await this.exists(studentId, listingId);
       if (exists) return true;
-      const doc = { id: `bm_${Date.now()}`, studentId, listingId, createdAt: (/* @__PURE__ */ new Date()).toISOString() };
+      const doc = { id: `bm_${Date.now()}`, studentId, listingId, createdAt: new Date().toISOString() };
       if (isAtlasConnected && mongoDb) {
         await mongoDb.collection("bookmarks").insertOne(doc);
       } else {
@@ -221,6 +226,75 @@ export const db = {
         return !!doc;
       }
       return memoryStore.bookmarks.some((b) => b.studentId === studentId && b.listingId === listingId);
+    }
+  },
+  studentPosts: {
+    async find(filter = {}) {
+      if (isAtlasConnected && mongoDb) {
+        return await mongoDb.collection("studentPosts").find(filter).sort({ createdAt: -1 }).toArray();
+      }
+      return [...memoryStore.studentPosts].filter((item) => Object.entries(filter).every(([k, v]) => item[k] === v)).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    },
+    async insertOne(doc) {
+      if (isAtlasConnected && mongoDb) {
+        await mongoDb.collection("studentPosts").insertOne(doc);
+        return doc;
+      }
+      memoryStore.studentPosts.push(doc);
+      return doc;
+    },
+    async deleteOne(filter) {
+      if (isAtlasConnected && mongoDb) {
+        return await mongoDb.collection("studentPosts").deleteOne(filter);
+      }
+      const index = memoryStore.studentPosts.findIndex(item => Object.entries(filter).every(([k, v]) => item[k] === v));
+      if (index !== -1) {
+        memoryStore.studentPosts.splice(index, 1);
+        return { deletedCount: 1 };
+      }
+      return { deletedCount: 0 };
+    },
+    async count() {
+      if (isAtlasConnected && mongoDb) {
+        return await mongoDb.collection("studentPosts").countDocuments();
+      }
+      return memoryStore.studentPosts.length;
+    }
+  },
+  resumes: {
+    async findOne(filter) {
+      if (isAtlasConnected && mongoDb) {
+        return await mongoDb.collection("resumes").findOne(filter);
+      }
+      return memoryStore.resumes.find(r => Object.entries(filter).every(([k, v]) => r[k] === v)) || null;
+    },
+    async insertOrUpdate(doc) {
+      if (isAtlasConnected && mongoDb) {
+        await mongoDb.collection("resumes").updateOne(
+          { studentId: doc.studentId },
+          { $set: doc },
+          { upsert: true }
+        );
+        return doc;
+      }
+      const idx = memoryStore.resumes.findIndex(r => r.studentId === doc.studentId);
+      if (idx !== -1) {
+        memoryStore.resumes[idx] = { ...memoryStore.resumes[idx], ...doc };
+      } else {
+        memoryStore.resumes.push(doc);
+      }
+      return doc;
+    },
+    async deleteOne(filter) {
+      if (isAtlasConnected && mongoDb) {
+        return await mongoDb.collection("resumes").deleteOne(filter);
+      }
+      const idx = memoryStore.resumes.findIndex(r => Object.entries(filter).every(([k, v]) => r[k] === v));
+      if (idx !== -1) {
+        memoryStore.resumes.splice(idx, 1);
+        return { deletedCount: 1 };
+      }
+      return { deletedCount: 0 };
     }
   }
 };
@@ -327,6 +401,74 @@ async function seedDatabaseIfEmpty() {
   await db.users.insertOne(candidate3);
   await db.users.insertOne(demoCompany);
   await db.users.insertOne(demoCompany2);
+  await db.studentPosts.insertOne({
+    id: "post_demo_1",
+    studentId: demoStudent.id,
+    studentName: demoStudent.name,
+    studentEmail: demoStudent.email,
+    university: "UC Berkeley",
+    degree: "B.S. Computer Science",
+    gradYear: "2026",
+    github: "https://github.com/alexrivera-demo",
+    title: "1st Place Winner @ CalHacks 11.0 - DevSync AI Assistant",
+    content: "Built an autonomous developer companion that scans pull requests, detects breaking changes, and auto-generates unit test fixtures. Won 1st place overall out of 400+ teams!",
+    achievementType: "Hackathon Win",
+    skills: ["React", "TypeScript", "Node.js", "MongoDB", "AI & LLMs"],
+    projectUrl: "https://github.com/alexrivera-demo/devsync-ai",
+    createdAt: new Date(Date.now() - 2 * 864e5).toISOString(),
+    visibleToRecruiters: true
+  });
+  await db.studentPosts.insertOne({
+    id: "post_demo_2",
+    studentId: candidate3.id,
+    studentName: candidate3.name,
+    studentEmail: candidate3.email,
+    university: "MIT",
+    degree: "B.S. Electrical Eng & CS",
+    gradYear: "2026",
+    github: "https://github.com/marcuschen-web",
+    title: "Open-Source Release: fast-react-table (1,400+ GitHub Stars)",
+    content: "Released fast-react-table: a virtualized, headless grid library for React 19 capable of 60 FPS scrolling through 500,000+ data rows with zero frame drops. Featured on Hacker News!",
+    achievementType: "Project Launch",
+    skills: ["React", "TypeScript", "Vite", "Tailwind CSS", "UI/UX"],
+    projectUrl: "https://github.com/marcuschen-web/fast-react-table",
+    createdAt: new Date(Date.now() - 5 * 864e5).toISOString(),
+    visibleToRecruiters: true
+  });
+  await db.studentPosts.insertOne({
+    id: "post_demo_3",
+    studentId: candidate2.id,
+    studentName: candidate2.name,
+    studentEmail: candidate2.email,
+    university: "Stanford University",
+    degree: "M.S. Artificial Intelligence",
+    gradYear: "2025",
+    github: "https://github.com/priyasharma-ai",
+    title: "Published Research Paper: Low-Latency Inference for LLMs on Edge GPUs",
+    content: "Our research on low-bit quantization and speculative decoding for edge-deployed LLMs was accepted at NeurIPS workshop. Achieved a 42% reduction in latency while retaining 98% perplexity scores.",
+    achievementType: "Research & Publication",
+    skills: ["Python", "PyTorch", "Machine Learning", "Deep Learning", "Docker"],
+    projectUrl: "https://arxiv.org/abs/2405.demo",
+    createdAt: new Date(Date.now() - 7 * 864e5).toISOString(),
+    visibleToRecruiters: true
+  });
+  await db.studentPosts.insertOne({
+    id: "post_demo_4",
+    studentId: "user_student_4",
+    studentName: "Jordan Lee",
+    studentEmail: "jordan.lee@gatech.edu",
+    university: "Georgia Tech",
+    degree: "B.S. Computer Science",
+    gradYear: "2026",
+    github: "https://github.com/jordanlee-devops",
+    title: "Earned AWS Certified Solutions Architect - Associate (Score: 920/1000)",
+    content: "Officially passed the AWS Solutions Architect Associate exam! Deep dived into multi-region VPC architectures, S3 lifecycle policies, EKS container orchestration, and resilient cloud infrastructure design.",
+    achievementType: "Certification",
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD", "Linux"],
+    projectUrl: "https://aws.amazon.com/verification",
+    createdAt: new Date(Date.now() - 10 * 864e5).toISOString(),
+    visibleToRecruiters: true
+  });
   const sampleListings = [
     {
       id: "list_intern_1",
@@ -669,5 +811,95 @@ async function seedDatabaseIfEmpty() {
   }
   await db.bookmarks.add("user_student_1", "list_intern_2");
   await db.bookmarks.add("user_student_1", "list_hackathon_1");
+  await seedStudentPostsIfEmpty();
   console.log("Seeding complete. MERN Job Board ready.");
 }
+
+export async function seedStudentPostsIfEmpty() {
+  try {
+    const postCount = await db.studentPosts.count();
+    if (postCount > 0) return;
+
+    const samplePosts = [
+      {
+        id: "post_seed_1",
+        studentId: "user_student_1",
+        studentName: "Alex Rivera",
+        studentEmail: "student@demo.com",
+        university: "UC Berkeley",
+        degree: "B.S. Computer Science",
+        gradYear: "2026",
+        github: "https://github.com/alexrivera-demo",
+        title: "1st Place Winner @ CalHacks 11.0 - DevSync AI Assistant",
+        content: "Excited to share that our team won 1st Place overall at CalHacks out of 400+ teams! We engineered DevSync, an autonomous developer workflow companion that scans pull requests, detects breaking API changes, and auto-generates unit test fixtures.",
+        achievementType: "Hackathon Win",
+        skills: ["React", "TypeScript", "Node.js", "MongoDB", "AI & LLMs"],
+        projectUrl: "https://github.com/alexrivera-demo/devsync-ai",
+        visibleToRecruiters: true,
+        likesCount: 24,
+        createdAt: new Date(Date.now() - 2 * 864e5).toISOString()
+      },
+      {
+        id: "post_seed_2",
+        studentId: "user_student_3",
+        studentName: "Marcus Chen",
+        studentEmail: "marcus.chen@mit.edu",
+        university: "MIT",
+        degree: "B.S. Electrical Eng & CS",
+        gradYear: "2026",
+        github: "https://github.com/marcuschen-web",
+        title: "Open-Source Release: fast-react-table (1,400+ GitHub Stars)",
+        content: "Released fast-react-table: a virtualized, headless grid library for React 19 capable of 60 FPS scrolling through 500,000+ data rows with zero frame drops. Featured on GitHub Trending and Hacker News!",
+        achievementType: "Project Launch",
+        skills: ["React", "TypeScript", "Vite", "Tailwind CSS", "UI/UX"],
+        projectUrl: "https://github.com/marcuschen-web/fast-react-table",
+        visibleToRecruiters: true,
+        likesCount: 42,
+        createdAt: new Date(Date.now() - 5 * 864e5).toISOString()
+      },
+      {
+        id: "post_seed_3",
+        studentId: "user_student_2",
+        studentName: "Priya Sharma",
+        studentEmail: "priya.sharma@stanford.edu",
+        university: "Stanford University",
+        degree: "M.S. Artificial Intelligence",
+        gradYear: "2025",
+        github: "https://github.com/priyasharma-ai",
+        title: "Published Research Paper: Low-Latency Inference for LLMs on Edge GPUs",
+        content: "Our research on low-bit quantization and speculative decoding for edge-deployed LLMs was accepted at NeurIPS workshop. Achieved a 42% reduction in generation latency while retaining 98% perplexity benchmark scores.",
+        achievementType: "Research & Publication",
+        skills: ["Python", "PyTorch", "Machine Learning", "Deep Learning", "Docker"],
+        projectUrl: "https://arxiv.org/abs/2405.demo",
+        visibleToRecruiters: true,
+        likesCount: 38,
+        createdAt: new Date(Date.now() - 8 * 864e5).toISOString()
+      },
+      {
+        id: "post_seed_4",
+        studentId: "user_student_4",
+        studentName: "Jordan Lee",
+        studentEmail: "jordan.lee@gatech.edu",
+        university: "Georgia Tech",
+        degree: "B.S. Computer Science",
+        gradYear: "2026",
+        github: "https://github.com/jordanlee-devops",
+        title: "Earned AWS Certified Solutions Architect - Associate (Score: 920/1000)",
+        content: "Officially passed the AWS Solutions Architect Associate exam! Deep dived into multi-region VPC architectures, S3 lifecycle policies, EKS container orchestration, and resilient cloud infrastructure design.",
+        achievementType: "Certification",
+        skills: ["AWS", "Docker", "Kubernetes", "CI/CD", "Linux"],
+        projectUrl: "https://aws.amazon.com/verification",
+        visibleToRecruiters: true,
+        likesCount: 19,
+        createdAt: new Date(Date.now() - 11 * 864e5).toISOString()
+      }
+    ];
+
+    for (const p of samplePosts) {
+      await db.studentPosts.insertOne(p);
+    }
+  } catch (err) {
+    console.warn("Error seeding sample student achievements:", err.message);
+  }
+}
+

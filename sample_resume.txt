@@ -1,0 +1,25 @@
+Mahesh Kumar
+San Francisco, CA | mahesh@example.com | https://github.com/mahesh-dev | https://linkedin.com/in/mahesh-dev
+
+EDUCATION
+University of California, Berkeley - B.S. in Computer Science (Class of 2026)
+GPA: 3.85 / 4.0
+
+TECHNICAL SKILLS
+Languages: TypeScript, JavaScript, Python, C++, SQL, HTML5, CSS3
+Frontend: React, Next.js, Tailwind CSS, Redux, Vite, Vue.js
+Backend & APIs: Node.js, Express, FastAPI, REST API, GraphQL, Microservices, WebSockets
+Databases: MongoDB, PostgreSQL, Redis, Firebase
+Cloud & DevOps: Docker, Kubernetes, AWS (EC2, S3, Lambda), Git, CI/CD, Linux, Terraform
+AI & Machine Learning: PyTorch, Machine Learning, Deep Learning, LangChain, AI & LLMs
+
+EXPERIENCE & PROJECTS
+Full-Stack MERN Career Hub & ATS
+- Built end-to-end recruitment platform using React, Node.js, Express, and MongoDB Atlas.
+- Engineered automated resume skill parser and candidate match ranking algorithm.
+- Implemented real-time Kanban candidate pipeline and JWT role-based access control.
+
+Autonomous DevSync AI Assistant
+- Built multi-agent developer companion using Python, PyTorch, LangChain, and Docker.
+- Won 1st Place overall at CalHacks out of 400+ developer teams.
+- Scaled inference endpoints using FastAPI and AWS ECS with 99.9% uptime.

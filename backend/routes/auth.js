@@ -71,10 +71,13 @@ router.post('/register', async (req, res) => {
         gradYear: studentProfile?.gradYear || '2026',
         skills: Array.isArray(studentProfile?.skills) ? studentProfile.skills : (studentProfile?.skills || '').split(',').map((s) => s.trim()).filter(Boolean),
         resumeSummary: studentProfile?.resumeSummary || '',
+        resumeText: studentProfile?.resumeText || '',
+        resumeFileName: studentProfile?.resumeFileName || '',
         github: studentProfile?.github || '',
         linkedin: studentProfile?.linkedin || '',
         portfolio: studentProfile?.portfolio || '',
-        bio: studentProfile?.bio || ''
+        bio: studentProfile?.bio || '',
+        recommendedOpportunityIds: Array.isArray(studentProfile?.recommendedOpportunityIds) ? studentProfile.recommendedOpportunityIds : []
       };
     } else if (role === 'company') {
       newUserDoc.companyProfile = {
@@ -208,8 +211,13 @@ router.put('/profile', async (req, res) => {
 
     if (user.role === 'student' && studentProfile) {
       updates.studentProfile = {
-        ...user.studentProfile,
-        ...studentProfile
+        ...(user.studentProfile || {}),
+        ...(studentProfile || {}),
+        skills: Array.isArray(studentProfile.skills) ? studentProfile.skills : typeof studentProfile.skills === 'string' ? studentProfile.skills.split(',').map((s) => s.trim()).filter(Boolean) : user.studentProfile?.skills || [],
+        resumeText: studentProfile.resumeText || user.studentProfile?.resumeText || '',
+        resumeSummary: studentProfile.resumeSummary || user.studentProfile?.resumeSummary || '',
+        resumeFileName: studentProfile.resumeFileName || user.studentProfile?.resumeFileName || '',
+        recommendedOpportunityIds: Array.isArray(studentProfile.recommendedOpportunityIds) ? studentProfile.recommendedOpportunityIds : user.studentProfile?.recommendedOpportunityIds || []
       };
     } else if (user.role === 'company' && companyProfile) {
       updates.companyProfile = {

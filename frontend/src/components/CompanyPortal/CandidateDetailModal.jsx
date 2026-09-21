@@ -9,7 +9,8 @@ import {
   Mail,
   Star,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  FileText
 } from "lucide-react";
 const STAGES = ["Applied", "Screening", "Shortlisted", "Interview", "Offer", "Rejected"];
 export const CandidateDetailModal = ({
@@ -82,7 +83,21 @@ export const CandidateDetailModal = ({
       ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "p-6 space-y-5 max-h-[60vh] overflow-y-auto", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3 text-xs", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center gap-2 text-xs", children: [
+        /* @__PURE__ */ jsxs(
+          "a",
+          {
+            href: `/api/resume/file/${application.studentId}`,
+            target: "_blank",
+            rel: "noreferrer",
+            className: "inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors",
+            children: [
+              /* @__PURE__ */ jsx(FileText, { className: "w-3.5 h-3.5 text-emerald-500" }),
+              /* @__PURE__ */ jsx("span", { children: "View Stored Resume (PDF)" }),
+              /* @__PURE__ */ jsx(ExternalLink, { className: "w-3 h-3 text-emerald-500" })
+            ]
+          }
+        ),
         application.githubUrl && /* @__PURE__ */ jsxs(
           "a",
           {
