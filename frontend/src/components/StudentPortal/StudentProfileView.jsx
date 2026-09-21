@@ -18,9 +18,7 @@ import {
   Edit3,
   Save,
   Check,
-  Download,
-  ExternalLink,
-  Database
+  Download
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
@@ -310,12 +308,6 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">
                   Student
                 </span>
-                {hasStoredResume && (
-                  <span className="inline-flex items-center space-x-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
-                    <Database className="w-2.5 h-2.5" />
-                    <span>Resume Stored in MongoDB</span>
-                  </span>
-                )}
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 {user.studentProfile?.degree || "Computer Science Candidate"} • {user.studentProfile?.university || "University Student"} (Class of {user.studentProfile?.gradYear || "2026"})
@@ -460,21 +452,11 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
           )}
 
           {hasStoredResume && (
-            <div className="ml-auto flex items-center space-x-2 flex-wrap gap-y-1">
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold">
-                <Database className="w-3.5 h-3.5 text-emerald-500" />
-                <span>MongoDB Stored: {resumeFileName || user.studentProfile?.resumeFileName}</span>
-              </div>
-              <a
-                href={`/api/resume/file/${user.id}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-[11px] font-semibold border border-indigo-200 dark:border-indigo-800 transition-colors"
-              >
-                <Download className="w-3 h-3" />
-                <span>View Stored File</span>
-                <ExternalLink className="w-2.5 h-2.5" />
-              </a>
+            <div className="ml-auto flex items-center">
+              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Resume saved</span>
+              </span>
             </div>
           )}
         </div>

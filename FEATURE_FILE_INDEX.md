@@ -56,7 +56,7 @@ nexhire-job-career-board/
 | :--- | :--- | :--- | :--- |
 | **Backend DB** | [`backend/db.js`](file:///c:/Users/mahesh/Desktop/nexhire-job-career-board/backend/db.js) | `db.resumes` | MongoDB collection storing Base64 file binary, MIME type, file size, and upload timestamp |
 | **Backend Route** | [`backend/routes/resume.js`](file:///c:/Users/mahesh/Desktop/nexhire-job-career-board/backend/routes/resume.js) | `GET /api/resume/file/:studentId` | Streams raw resume PDF / DOCX directly to browser with inline disposition |
-| **Frontend Student** | [`frontend/src/components/StudentPortal/StudentProfileView.jsx`](file:///c:/Users/mahesh/Desktop/nexhire-job-career-board/frontend/src/components/StudentPortal/StudentProfileView.jsx) | "View Stored File" Button | Displays "MongoDB Stored" badge and opens the uploaded resume file in a new tab |
+| **Frontend Student** | [`frontend/src/components/StudentPortal/StudentProfileView.jsx`](file:///c:/Users/mahesh/Desktop/nexhire-job-career-board/frontend/src/components/StudentPortal/StudentProfileView.jsx) | "Resume saved" Badge & "View Stored PDF" | Displays clean "Resume saved" status badge and allows viewing stored file |
 | **Frontend Recruiter** | [`frontend/src/components/CompanyPortal/CandidateDetailModal.jsx`](file:///c:/Users/mahesh/Desktop/nexhire-job-career-board/frontend/src/components/CompanyPortal/CandidateDetailModal.jsx) | "View Stored Resume (PDF)" Button | Recruiter clicks to view candidate's stored resume directly from MongoDB |
 
 ---

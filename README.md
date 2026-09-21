@@ -39,7 +39,7 @@ nexhire-job-career-board/
 │   │   │   ├── AuthModal.jsx      # Student & Recruiter login/register modal
 │   │   │   │
 │   │   │   ├── StudentPortal/     # STUDENT FEATURES
-│   │   │   │   ├── StudentProfileView.jsx       # Resume upload, MongoDB stored badge, skill tags
+│   │   │   │   ├── StudentProfileView.jsx       # Resume upload, 'Resume saved' badge, skill tags
 │   │   │   │   ├── StudentDashboard.jsx         # Opportunities, "Recommended for You" AI tab
 │   │   │   │   ├── OpportunityCard.jsx          # Match % badge & matched vs missing skill pills
 │   │   │   │   ├── OpportunityDetailModal.jsx   # Job details & 1-click apply modal
