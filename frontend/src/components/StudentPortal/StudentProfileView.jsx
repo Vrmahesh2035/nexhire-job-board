@@ -151,7 +151,7 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
       const dataUrl = event.target?.result;
       setResumeFileData(dataUrl);
 
-      // Trigger automatic scrape & direct MongoDB persistence
+      // Trigger automatic scrape & direct persistence
       await triggerScrape({
         fileData: dataUrl,
         fileName: file.name,
@@ -206,7 +206,7 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
       await refreshUser();
 
       setSuccessMessage(
-        `Resume successfully processed & stored in MongoDB Atlas! Scraped ${response.skills?.length || 0} skills and matched ${response.recommendedOpportunities?.length || 0} opportunities.`
+        `Resume successfully processed & saved! Scraped ${response.skills?.length || 0} skills and matched ${response.recommendedOpportunities?.length || 0} opportunities.`
       );
     } catch (err) {
       console.error("Resume scrape error:", err);
@@ -257,7 +257,7 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
 
       await refreshUser();
       setIsEditingProfile(false);
-      setSuccessMessage("Student Profile & Resume permanently stored in MongoDB Atlas!");
+      setSuccessMessage("Student Profile & Resume saved!");
     } catch (err) {
       console.error("Save profile error:", err);
       setErrorMessage(err.message || "Failed to update profile.");
@@ -330,7 +330,7 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
               className="flex items-center space-x-1.5 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>{isSaving ? "Saving..." : "Save to MongoDB"}</span>
+              <span>{isSaving ? "Saving..." : "Saved"}</span>
             </button>
           </div>
         </div>
@@ -470,11 +470,11 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
               <Sparkles className="w-4 h-4" />
             </span>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Resume Upload, MongoDB Storage & Skills Scraper
+              Resume Upload & Skills Scraper
             </h2>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Upload your resume (PDF, Word DOCX, or text). The file is saved directly into MongoDB Atlas and scraped using our high-precision text parser to extract verified tech skills and match you to suitable roles.
+            Upload your resume (PDF, Word DOCX, or text). The file is saved directly and scraped using our high-precision text parser to extract verified tech skills and match you to suitable roles.
           </p>
         </div>
 
@@ -547,12 +547,12 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
               {isScraping ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Processing & Storing in MongoDB...</span>
+                  <span>Processing & Saving...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Scrape & Save to MongoDB</span>
+                  <span>Scrape & Save</span>
                 </>
               )}
             </button>
@@ -586,7 +586,7 @@ export const StudentProfileView = ({ onNavigateToRecommended, onOpenAuth }) => {
               className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>{isSaving ? "Saving..." : "Save to MongoDB"}</span>
+              <span>{isSaving ? "Saving..." : "Saved"}</span>
             </button>
           </div>
         </div>
