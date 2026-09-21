@@ -18,11 +18,10 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  // Standard Middlewares with Secure CORS for deployment
+  // Standard Middlewares with Flexible CORS for deployment
   app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://nexhire-job-board.onrender.com'] // Update this after Render gives you your live URL
-      : '*'
+    origin: true,
+    credentials: true
   }));
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));

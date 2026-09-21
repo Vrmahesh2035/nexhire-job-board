@@ -1,20 +1,35 @@
 import zlib from 'zlib';
 import { createRequire } from 'module';
 
-const require = createRequire(import.meta.url);
+// Support both native ESM (dev) and esbuild CJS bundle (Render production)
+let nodeRequire = null;
+try {
+  if (typeof require === 'function') {
+    nodeRequire = require;
+  } else if (typeof import.meta !== 'undefined' && import.meta && import.meta.url) {
+    nodeRequire = createRequire(import.meta.url);
+  } else {
+    nodeRequire = createRequire(process.cwd() + '/package.json');
+  }
+} catch {
+  nodeRequire = null;
+}
+
 let pdfParse = null;
 let mammoth = null;
 
-try {
-  pdfParse = require('pdf-parse');
-} catch (e) {
-  console.warn('pdf-parse not available:', e.message);
-}
+if (nodeRequire) {
+  try {
+    pdfParse = nodeRequire('pdf-parse');
+  } catch (e) {
+    console.warn('pdf-parse not available:', e.message);
+  }
 
-try {
-  mammoth = require('mammoth');
-} catch (e) {
-  console.warn('mammoth not available:', e.message);
+  try {
+    mammoth = nodeRequire('mammoth');
+  } catch (e) {
+    console.warn('mammoth not available:', e.message);
+  }
 }
 
 // Comprehensive technical skill taxonomy categorized for modern software engineering
